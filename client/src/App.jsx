@@ -7,6 +7,7 @@ import ForgetPassword from './pages/Forget-Password/ForgetPassword/page'
 import SetPassword  from './pages/Forget-Password/SetPassword/page'
 import VerifyCode from './pages/Forget-Password/VerifyCode/page'
 import { Route, Routes } from 'react-router-dom'
+import ItemMaster from './pages/ItemMaster/page'
 function App() {
 
   return (
@@ -17,6 +18,7 @@ function App() {
     <Route path="/forget" element={<ForgetPassword/>}/>
     <Route path="/verify" element={<VerifyCode/>}/>
     <Route path="/setPassword" element={<SetPassword/>}/>
+    <Route path="/ItemMaster" element={<ItemMaster/>}/>
   </Routes>
   )
 }
