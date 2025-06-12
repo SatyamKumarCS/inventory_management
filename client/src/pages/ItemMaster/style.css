@@ -26,3 +26,40 @@
     background-color: #f9fafb;
   }
   
+  .ItemMaster-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .ItemMaster-buttons {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .ItemMaster-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .ItemMaster-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .action-btn {
+    background-color: #2563eb;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .action-btn:hover {
+    background-color: #1d4ed8;
+  }
+  
