@@ -58,7 +58,7 @@ const Login = () => {
                             <label>
                                 <input type="checkbox" /> Remember for 30 days
                             </label>
-                            <a href="#">Forgot password</a>
+                            <Link to="/forget">Forgot password</Link>
                         </div>
                         <button type="submit" className="btn-primary">Sign in</button>
                         <button type="button" className="btn-google">
