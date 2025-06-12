@@ -12,7 +12,7 @@ import {
   LogOut,
   Layers
 } from 'lucide-react';
-import './style.css'; // ← Make sure this file exists
+import './style.css'; 
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -22,7 +22,7 @@ const menuItems = [
   { icon: ShoppingCart, label: 'Orders', path: '/orders' },
   { icon: Store, label: 'Manage Store', path: '/manage-store' },
   { icon: UserCheck, label: 'Customers', path: '/customers' },
-  { icon: Layers, label: 'Item Master', path: '/item-master' },
+  { icon: Layers, label: 'Item Master', path: '/ItemMaster' },
 ];
 
 const Sidebar = () => {
@@ -30,20 +30,12 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar-container">
-      {/* Logo */}
+
       <div className="sidebar-logo">
-        <div className="logo-wrapper">
-          <div className="logo-circle">
-            <span className="logo-letter">C</span>
-          </div>
-          <div>
-            <h1 className="logo-title">Countrees</h1>
-            <p className="logo-subtitle">TECHNOLOGIES</p>
-          </div>
-        </div>
+        <img src="../../../full logo.png" alt="Logo" />
       </div>
 
-      {/* Navigation */}
+
       <nav className="sidebar-nav">
         <ul className="menu-list">
           {menuItems.map((item) => {
@@ -65,7 +57,6 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      {/* Bottom section */}
       <div className="sidebar-bottom">
         <Link
           to="/settings"
