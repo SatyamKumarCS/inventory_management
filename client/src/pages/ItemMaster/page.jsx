@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/sidebar/page";
 import Header from "../../components/header/page";
 import CategoriesTable from "../../components/Categories-Table/page";
-import axios from "../../api/axiosInstance"; ;
+import axios from "../../api/axiosInstance";;
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import {
@@ -14,8 +14,10 @@ import {
   DialogActions,
   Button,
   TextField,
+  MenuItem,
 } from "@mui/material";
 import './style.css';
+
 
 const ItemMaster = () => {
   const [showAddCategory, setShowAddCategory] = useState(false);
@@ -23,15 +25,18 @@ const ItemMaster = () => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [newSubCategory, setNewSubCategory] = useState("");
 
   const navigate = useNavigate();
 
   const fetchCategories = async () => {
     try {
       const res = await axios.get("/api/categories");
+      console.log("Fetched full category data:", JSON.stringify(res.data, null, 2)); // <--- ADD THIS
       setCategories(res.data);
     } catch (err) {
-      console.log("Fetch error:",err)
+      console.log("Fetch error:", err)
       setSnackbar({
         open: true,
         message: "Failed to fetch categories",
@@ -52,7 +57,7 @@ const ItemMaster = () => {
       setShowAddCategory(false);
       setNewCategory("");
     } catch (err) {
-      console.log("Add Category Error:",err)
+      console.log("Add Category Error:", err)
       setSnackbar({
         open: true,
         message: err.response?.data?.message || "Failed to add category",
@@ -60,6 +65,33 @@ const ItemMaster = () => {
       });
     }
   };
+
+  const handleAddSubCategory = async () => {
+    try {
+      await axios.post("/api/subcategories", {
+        name: newSubCategory,
+        categoryId: selectedCategory,
+      });
+
+      setSnackbar({
+        open: true,
+        message: "Subcategory added!",
+        severity: "success",
+      });
+
+      fetchCategories(); 
+      setShowSubCategory(false);
+      setNewSubCategory("");
+      setSelectedCategory("");
+    } catch (err) {
+      console.log("Add SubCategory Error:", err);
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.message || "Failed to add subcategory",
+        severity: "error",
+      });
+    }
+  }
 
   const handleDelete = async (id) => {
     try {
@@ -122,12 +154,39 @@ const ItemMaster = () => {
           <Dialog open={showSubCategory} onClose={() => setShowSubCategory(false)} fullWidth>
             <DialogTitle>Add Sub Category</DialogTitle>
             <DialogContent>
-              <TextField margin="dense" label="Category" type="text" fullWidth variant="outlined" />
-              <TextField margin="dense" label="Sub Category" type="text" fullWidth variant="outlined" />
+              <TextField
+                select
+                label="Select Category"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                fullWidth
+                margin="dense"
+                variant="outlined"
+              >
+                {categories.map((cat) => (
+                  <MenuItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                margin="dense"
+                label="Sub Category Name"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={newSubCategory}
+                onChange={(e) => setNewSubCategory(e.target.value)}
+              />
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setShowSubCategory(false)} color="secondary">Cancel</Button>
-              <Button onClick={() => setShowSubCategory(false)} variant="contained">Submit</Button>
+              <Button onClick={() => setShowSubCategory(false)} color="secondary">
+                Cancel
+              </Button>
+              <Button onClick={handleAddSubCategory} variant="contained">
+                Submit
+              </Button>
             </DialogActions>
           </Dialog>
 
