@@ -57,26 +57,22 @@ app.post('/register', async (req, res) => {
 // Add a new category
 app.post('/api/categories', async (req, res) => {
     const { name } = req.body;
-
+  
     if (!name || name.trim() === "") {
-        return res.status(400).json({ message: 'Category name is required' });
+      return res.status(400).json({ message: "Category name is required" });
     }
-
+  
     try {
-        const newCategory = await prisma.category.create({
-            data: { name },
-        });
-
-        res.status(201).json({ message: 'Category added', category: newCategory });
-    } catch (err) {
-        console.error('Error adding category:', err);
-        if (err.code === 'P2002') {  
-            res.status(409).json({ message: 'Category already exists' });
-        } else {
-            res.status(500).json({ message: 'Failed to add category' });
-        }
+      const category = await prisma.category.create({
+        data: { name },
+      });
+      res.status(201).json(category);
+    } catch (error) {
+      console.error("Add Category Error:", error);
+      res.status(500).json({ message: "Error adding category" });
     }
-})
+  });
+  
 
 // Add SubCategory
 app.post('/api/subcategories', async (req, res) => {
@@ -108,16 +104,74 @@ app.get('/api/categories', async (req, res) => {
         // console.log("Categories API HIT");
         const categories = await prisma.category.findMany({
             include: {
-              subcategories: true,
+                subcategories: true,
             },
-          });
-  
-      res.json(categories);
+        });
+
+        res.json(categories);
     } catch (err) {
-      console.error('Error fetching categories:', err);
-      res.status(500).json({ message: 'Failed to fetch categories' });
+        console.error('Error fetching categories:', err);
+        res.status(500).json({ message: 'Failed to fetch categories' });
+    }
+});
+
+app.put('/api/categories/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    if (!name || name.trim() === "") {
+        return res.status(400).json({ message: "Category name is required" });
+    }
+
+    try {
+        const updated = await prisma.category.update({
+            where: { id: parseInt(id) },
+            data: { name },
+        });
+        res.status(200).json({ message: "Category updated", category: updated });
+    } catch (err) {
+        console.error("Error updating category:", err);
+        res.status(500).json({ message: "Failed to update category" });
+    }
+});
+
+app.put('/api/subcategories/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    try {
+        const updatedSubcategory = await prisma.subCategory.update({
+            where: { id: parseInt(id) },
+            data: { name },
+        });
+
+        res.json({ message: "Subcategory updated", subcategory: updatedSubcategory });
+    } catch (err) {
+        console.error("Subcategory update error:", err);
+        res.status(500).json({ message: "Failed to update subcategory" });
+    }
+});
+
+app.delete('/api/categories/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+  
+    try {
+      await prisma.subCategory.deleteMany({
+        where: { categoryId: id },
+      });
+  
+      await prisma.category.delete({
+        where: { id },
+      });
+  
+      res.status(200).json({ message: "Category deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      res.status(404).json({ message: "Category not found or already deleted" });
     }
   });
+  
+
 
 
 app.listen(3001, () =>
