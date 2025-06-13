@@ -13,8 +13,16 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model Category {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  createdAt DateTime @default(now())
+  id            Int           @id @default(autoincrement())
+  name          String
+  subcategories SubCategory[] @relation("CategoryToSubCategory")
+}
+
+model SubCategory {
+  id         Int      @id @default(autoincrement())
+  name       String
+  category   Category @relation("CategoryToSubCategory", fields: [categoryId], references: [id])
+  categoryId Int
 }
