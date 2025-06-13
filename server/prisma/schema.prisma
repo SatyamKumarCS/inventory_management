@@ -15,14 +15,14 @@ datasource db {
 }
 
 model Category {
-  id            Int           @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   name          String
-  subcategories SubCategory[] @relation("CategoryToSubCategory")
+  subcategories SubCategory[] 
 }
 
 model SubCategory {
   id         Int      @id @default(autoincrement())
   name       String
-  category   Category @relation("CategoryToSubCategory", fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId Int
 }
