@@ -1,0 +1,41 @@
+/* CategoriesTable Styles */
+
+.categories-table-container {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    margin-top: 16px;
+  }
+  
+  .categories-table-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+  }
+  
+  .table-header-cell {
+    font-weight: 600;
+    background-color: #f5f5f5;
+    color: #222;
+  }
+  
+  .table-row:hover {
+    background-color: #f9f9f9;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .add-category-button {
+    background-color: black !important;
+    color: white !important;
+    border-radius: 8px;
+    padding: 8px 16px;
+    text-transform: none;
+  }
+  
