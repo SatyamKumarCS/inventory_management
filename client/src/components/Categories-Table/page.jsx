@@ -1,12 +1,19 @@
 import React from "react";
 import {
-    Table, TableHead, TableRow, TableCell, TableBody, IconButton,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    IconButton,
+    Chip,
 } from "@mui/material";
 import { SquarePen, Trash2 } from "lucide-react";
-import './style.css';
-
+import "./style.css";
 
 const CategoriesTable = ({ categories, onEdit, onDelete }) => {
+    // console.log("🧾 CategoriesTable received categories:", categories);
+
     return (
         <div className="categories-table-container">
             <h2 className="categories-table-title">Category List</h2>
@@ -20,21 +27,29 @@ const CategoriesTable = ({ categories, onEdit, onDelete }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {categories.map((cat, index) => (
-                        <TableRow key={cat.id} className="table-row">
+                    {categories.map((category, index) => (
+                        <TableRow key={category.id}>
                             <TableCell>{index + 1}</TableCell>
-                            <TableCell>{cat.name}</TableCell>
+                            <TableCell>{category.name}</TableCell>
                             <TableCell>
-                                {cat.subcategories?.length
-                                    ? cat.subcategories.join(", ")
-                                    : "No subcategories"}
+                                {category.subcategories?.length > 0 ? (
+                                    category.subcategories.map((sub) => (
+                                        <Chip
+                                            key={sub.id}
+                                            label={sub.name}
+                                            style={{ marginRight: "5px", marginBottom: "5px" }}
+                                        />
+                                    ))
+                                ) : (
+                                    <i>No subcategories</i>
+                                )}
                             </TableCell>
                             <TableCell>
                                 <div className="action-buttons">
-                                <IconButton onClick={() => onEdit(cat)}>
+                                    <IconButton onClick={() => onEdit(category)}>
                                         <SquarePen color="green" size={20} />
                                     </IconButton>
-                                    <IconButton onClick={() => onDelete(cat.id)}>
+                                    <IconButton onClick={() => onDelete(category.id)}>
                                         <Trash2 color="red" size={20} />
                                     </IconButton>
                                 </div>
@@ -44,7 +59,6 @@ const CategoriesTable = ({ categories, onEdit, onDelete }) => {
                 </TableBody>
             </Table>
         </div>
-
     );
 };
 
