@@ -20,7 +20,7 @@ function App() {
     <Route path="/verify" element={<VerifyCode/>}/>
     <Route path="/setPassword" element={<SetPassword/>}/>
     <Route path="/ItemMaster" element={<ItemMaster/>}/>
-    <Route path="/AddItem" element={<AddItem/>}/>
+    <Route path="/ItemMaster/additem" element={<AddItem/>}/>
   </Routes>
   )
 }
