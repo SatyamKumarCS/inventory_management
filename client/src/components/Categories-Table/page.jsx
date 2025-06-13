@@ -49,7 +49,7 @@ const CategoriesTable = ({ categories, onEdit, onDelete }) => {
                                     <IconButton onClick={() => onEdit(category)}>
                                         <SquarePen color="green" size={20} />
                                     </IconButton>
-                                    <IconButton onClick={() => onDelete(category.id)}>
+                                    <IconButton onClick={() => onDelete(category)}>
                                         <Trash2 color="red" size={20} />
                                     </IconButton>
                                 </div>
