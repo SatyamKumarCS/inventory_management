@@ -8,6 +8,7 @@ import SetPassword  from './pages/Forget-Password/SetPassword/page'
 import VerifyCode from './pages/Forget-Password/VerifyCode/page'
 import { Route, Routes } from 'react-router-dom'
 import ItemMaster from './pages/ItemMaster/page'
+import AddItem from './pages/ItemMaster/Add-Item/page'
 function App() {
 
   return (
@@ -19,6 +20,7 @@ function App() {
     <Route path="/verify" element={<VerifyCode/>}/>
     <Route path="/setPassword" element={<SetPassword/>}/>
     <Route path="/ItemMaster" element={<ItemMaster/>}/>
+    <Route path="/AddItem" element={<AddItem/>}/>
   </Routes>
   )
 }
