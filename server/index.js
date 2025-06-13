@@ -1,13 +1,21 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
+const { PrismaClient } = require('./generated/prisma');
 const UserModel = require('./model/user')
 
 const app = express()
+const prisma = new PrismaClient();
 app.use(express.json())
 app.use(cors())
 require('dotenv').config();
 
+
+prisma.$connect()
+    .then(() => console.log("Connected to PostgreSQL via Prisma"))
+    .catch(err => console.error("PostgreSQL Prisma error:", err));
+
+    
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to MongoDB"))
     .catch(err => console.error("MongoDB connection error:", err));
@@ -40,6 +48,41 @@ app.post('/register', async (req, res) => {
         res.status(201).json({ message: "User registered successfully", user: newUser })
     } catch (err) {
         res.status(500).json({ message: "Registration failed", error: err.message })
+    }
+})
+
+//Get All Categories
+app.get('/api/categories', async (req, res) => {
+    try {
+        const categories = await prisma.category.findMany();
+        res.json(categories);
+    } catch (err) {
+        console.error('Error fetching categories:', err);
+        res.status(500).json({ message: 'Failed to fetch categories' });
+    }
+})
+
+// Add a new category
+app.post('/api/categories', async (req, res) => {
+    const { name } = req.body;
+
+    if (!name || name.trim() === "") {
+        return res.status(400).json({ message: 'Category name is required' });
+    }
+
+    try {
+        const newCategory = await prisma.category.create({
+            data: { name },
+        });
+
+        res.status(201).json({ message: 'Category added', category: newCategory });
+    } catch (err) {
+        console.error('Error adding category:', err);
+        if (err.code === 'P2002') {  // Prisma unique constraint violation
+            res.status(409).json({ message: 'Category already exists' });
+        } else {
+            res.status(500).json({ message: 'Failed to add category' });
+        }
     }
 })
 
