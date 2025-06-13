@@ -27,6 +27,15 @@ const ItemMaster = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
   const [selectedCategory, setSelectedCategory] = useState("");
   const [newSubCategory, setNewSubCategory] = useState("");
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [categoryBeingEdited, setCategoryBeingEdited] = useState(null);
+  const [editedCategoryName, setEditedCategoryName] = useState("");
+  const [editedSubcategories, setEditedSubcategories] = useState([]);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
+
+
+
 
   const navigate = useNavigate();
 
@@ -79,7 +88,7 @@ const ItemMaster = () => {
         severity: "success",
       });
 
-      fetchCategories(); 
+      fetchCategories();
       setShowSubCategory(false);
       setNewSubCategory("");
       setSelectedCategory("");
@@ -93,16 +102,107 @@ const ItemMaster = () => {
     }
   }
 
-  const handleDelete = async (id) => {
+  const handleEditCategory = (category) => {
+    setCategoryBeingEdited(category);
+    setEditedCategoryName(category.name);
+    setEditedSubcategories(category.subcategories || []);
+    setEditDialogOpen(true);
+  };
+
+
+  // const handleDelete = async (id) => {
+  //   try {
+  //     await axios.delete(`/api/categories/${id}`);
+  //     setSnackbar({ open: true, message: "Category deleted successfully", severity: "success" });
+  //     fetchCategories();
+  //   } catch (err) {
+  //     console.error("Add Category Error:", err);
+  //     setSnackbar({ open: true, message: "Failed to delete category", severity: "error" });
+  //   }
+  // };
+
+  const handleUpdateCategory = async () => {
     try {
-      await axios.delete(`/api/categories/${id}`);
+
+      await axios.put(`/api/categories/${categoryBeingEdited.id}`, {
+        name: editedCategoryName,
+      });
+
+
+
+      for (const sub of editedSubcategories) {
+        if (sub.id) {
+
+          await axios.put(`/api/subcategories/${sub.id}`, { name: sub.name });
+        } else if (sub.name.trim()) {
+
+          await axios.post(`/api/subcategories`, {
+            name: sub.name,
+            categoryId: categoryBeingEdited.id,
+          });
+        }
+      }
+
+      setSnackbar({ open: true, message: "Category updated!", severity: "success" });
+      fetchCategories();
+      setEditDialogOpen(false);
+      setCategoryBeingEdited(null);
+      setEditedSubcategories([]);
+    } catch (err) {
+      console.error("Update Error:", err);
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.message || "Failed to update category",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleDeleteSubCategory = async (index) => {
+    const subToDelete = editedSubcategories[index];
+
+
+    if (subToDelete.id) {
+      try {
+        await axios.delete(`/api/subcategories/${subToDelete.id}`);
+        console.log("Subcategory deleted from DB");
+      } catch (error) {
+        console.error("Error deleting subcategory from DB:", error);
+        return;
+      }
+    }
+
+    const updated = editedSubcategories.filter((_, i) => i !== index);
+    setEditedSubcategories(updated);
+  };
+
+
+  const confirmDeleteCategory = (category) => {
+    setCategoryToDelete(category);
+    setConfirmDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!categoryToDelete?.id) {
+      console.error("No category selected for deletion");
+      return;
+    }
+
+    try {
+      await axios.delete(`/api/categories/${categoryToDelete.id}`);
       setSnackbar({ open: true, message: "Category deleted successfully", severity: "success" });
       fetchCategories();
     } catch (err) {
-      console.error("Add Category Error:", err);
+      console.error("Delete Category Error:", err);
       setSnackbar({ open: true, message: "Failed to delete category", severity: "error" });
+    } finally {
+      setConfirmDeleteOpen(false);
+      setCategoryToDelete(null);
     }
   };
+
+
+
 
   return (
     <div className="ItemMaster-container">
@@ -119,17 +219,19 @@ const ItemMaster = () => {
               <Button variant="contained" style={{ backgroundColor: 'black', color: 'white' }} onClick={() => setShowSubCategory(true)}>
                 Add Sub Category
               </Button>
-              <Button variant="contained" style={{ backgroundColor: 'black', color: 'white' }} onClick={() => navigate("/AddItem")}>Add Item</Button>
+              <Button variant="contained" style={{ backgroundColor: 'black', color: 'white' }} onClick={() => navigate("/ItemMaster/additem")}>Add Item</Button>
             </div>
           </div>
 
           <CategoriesTable
             categories={categories}
-            onEdit={(cat) => console.log("Edit", cat)}
-            onDelete={handleDelete}
+            onEdit={handleEditCategory}
+            onDelete={(category) => confirmDeleteCategory(category)}
           />
 
-          {/* Add Category Dialog */}
+
+
+          {/* Category Dialog */}
           <Dialog open={showAddCategory} onClose={() => setShowAddCategory(false)} fullWidth>
             <DialogTitle>Add Category</DialogTitle>
             <DialogContent>
@@ -150,7 +252,7 @@ const ItemMaster = () => {
             </DialogActions>
           </Dialog>
 
-          {/* Add Subcategory Dialog */}
+          {/*  Subcategory Dialog */}
           <Dialog open={showSubCategory} onClose={() => setShowSubCategory(false)} fullWidth>
             <DialogTitle>Add Sub Category</DialogTitle>
             <DialogContent>
@@ -205,6 +307,82 @@ const ItemMaster = () => {
               {snackbar.message}
             </MuiAlert>
           </Snackbar>
+          <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} fullWidth>
+            <DialogTitle>Edit Category</DialogTitle>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Category Name"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={editedCategoryName}
+                onChange={(e) => setEditedCategoryName(e.target.value)}
+              />
+
+              <h4 style={{ marginTop: '20px' }}>Subcategories</h4>
+              {editedSubcategories.map((sub, index) => (
+                <div
+                  key={sub.id || index}
+                  style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}
+                >
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    value={sub.name}
+                    onChange={(e) => {
+                      const updated = [...editedSubcategories];
+                      updated[index].name = e.target.value;
+                      setEditedSubcategories(updated);
+                    }}
+                  />
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={async () => handleDeleteSubCategory(index)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              ))}
+
+              <Button
+                variant="outlined"
+                onClick={() => setEditedSubcategories([...editedSubcategories, { name: "" }])}
+              >
+                Add Subcategory
+              </Button>
+            </DialogContent>
+
+            <DialogActions>
+              <Button onClick={() => setEditDialogOpen(false)} color="secondary">
+                Cancel
+              </Button>
+              <Button onClick={handleUpdateCategory} variant="contained">
+                Update
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={confirmDeleteOpen}
+            onClose={() => setConfirmDeleteOpen(false)}
+          >
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogContent>
+              Are you sure you want to delete this category? This action cannot be undone.
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setConfirmDeleteOpen(false)} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleConfirmDelete} color="error" variant="contained">
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
+
         </div>
       </div>
     </div>
