@@ -37,17 +37,6 @@
     gap: 12px;
   }
   
-  .ItemMaster-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .ItemMaster-buttons {
-    display: flex;
-    gap: 10px;
-  }
-  
   .action-btn {
     background-color: #2563eb;
     color: white;
