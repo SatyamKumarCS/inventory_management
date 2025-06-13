@@ -40,7 +40,7 @@ const Sidebar = () => {
         <ul className="menu-list">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname.startsWith(item.path);
 
             return (
               <li key={item.path}>
