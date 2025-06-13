@@ -1,5 +1,5 @@
-import Sidebar from "./../../../components/sidebar/page";
-import Header from "./../../../components/header/page";
+import Sidebar from "../../../components/sidebar/page";
+import Header from "../../../components/header/page";
 import './style.css';
 import {
   TextField,
