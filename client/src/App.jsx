@@ -9,6 +9,13 @@ import VerifyCode from './pages/Forget-Password/VerifyCode/page'
 import { Route, Routes } from 'react-router-dom'
 import ItemMaster from './pages/ItemMaster/page'
 import AddItem from './pages/ItemMaster/Add-Item/page'
+import Customer from './pages/Customers/page'
+import  ManageStore from './pages/Manage-Store/page'
+import Order from './pages/Orders/page'
+import Report from './pages/Reports/page'
+import Supplier from './pages/Suppliers/page'
+import Inventory from './pages/Inventory/page'
+
 function App() {
 
   return (
@@ -21,6 +28,12 @@ function App() {
     <Route path="/setPassword" element={<SetPassword/>}/>
     <Route path="/ItemMaster" element={<ItemMaster/>}/>
     <Route path="/ItemMaster/additem" element={<AddItem/>}/>
+    <Route path="/Inventory" element={<Inventory/>}/>
+    <Route path="/Customer" element={<Customer/>}/>
+    <Route path="/Manage_Store" element={< ManageStore/>}/>
+    <Route path="/Order" element={<Order/>}/>
+    <Route path="/Reports" element={<Report/>}/>
+    <Route path="/Supplier" element={<Supplier/>}/>
   </Routes>
   )
 }
