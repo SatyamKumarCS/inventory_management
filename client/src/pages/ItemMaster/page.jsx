@@ -1,4 +1,3 @@
-// ItemMaster.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/sidebar/page";
@@ -15,6 +14,7 @@ import {
   Button,
   TextField,
   MenuItem,
+  Typography
 } from "@mui/material";
 import './style.css';
 
@@ -369,9 +369,14 @@ const ItemMaster = () => {
             open={confirmDeleteOpen}
             onClose={() => setConfirmDeleteOpen(false)}
           >
-            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogTitle>Delete Category</DialogTitle>
             <DialogContent>
-              Are you sure you want to delete this category? This action cannot be undone.
+              <Typography variant="body1" color="textSecondary" sx={{ color: "#555", mb: 1 }}>
+                Are you sure you want to delete <strong>{categoryToDelete?.name}</strong> and all its subcategories?
+              </Typography>
+              <Typography variant="body2" color="textSecondary" sx={{ color: "#777" }}>
+                This action cannot be undone.
+              </Typography>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setConfirmDeleteOpen(false)} color="primary">
