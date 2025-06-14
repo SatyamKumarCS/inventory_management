@@ -1,0 +1,28 @@
+.customer-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 250px; 
+    width: calc(100vw - 250px);
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .customer-header {
+    height: 64px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  
+  .customer-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    background-color: #f9fafb;
+  }
+  
