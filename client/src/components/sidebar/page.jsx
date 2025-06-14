@@ -16,12 +16,12 @@ import './style.css';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-  { icon: Package, label: 'Inventory', path: '/inventory' },
-  { icon: FileText, label: 'Reports', path: '/reports' },
-  { icon: Users, label: 'Suppliers', path: '/suppliers' },
-  { icon: ShoppingCart, label: 'Orders', path: '/orders' },
-  { icon: Store, label: 'Manage Store', path: '/manage-store' },
-  { icon: UserCheck, label: 'Customers', path: '/customers' },
+  { icon: Package, label: 'Inventory', path: '/Inventory' },
+  { icon: FileText, label: 'Reports', path: '/Reports' },
+  { icon: Users, label: 'Suppliers', path: '/Supplier' },
+  { icon: ShoppingCart, label: 'Orders', path: '/Order' },
+  { icon: Store, label: 'Manage Store', path: '/Manage_Store' },
+  { icon: UserCheck, label: 'Customers', path: '/Customer' },
   { icon: Layers, label: 'Item Master', path: '/ItemMaster' },
 ];
 
