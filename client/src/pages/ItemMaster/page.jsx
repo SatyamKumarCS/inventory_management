@@ -42,7 +42,7 @@ const ItemMaster = () => {
   const fetchCategories = async () => {
     try {
       const res = await axios.get("/api/categories");
-      console.log("Fetched full category data:", JSON.stringify(res.data, null, 2)); // <--- ADD THIS
+      // console.log("Fetched full category data:", JSON.stringify(res.data, null, 2)); // <--- ADD THIS
       setCategories(res.data);
     } catch (err) {
       console.log("Fetch error:", err)
