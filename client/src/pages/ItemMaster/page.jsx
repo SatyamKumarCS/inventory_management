@@ -211,7 +211,9 @@ const ItemMaster = () => {
         <Header />
         <div className="ItemMaster-content">
           <div className="ItemMaster-header-row">
-            <h1>Item Master</h1>
+            <Typography variant="h4" component="h1" fontWeight="Bold" gutterBottom>
+              Item Master
+            </Typography>
             <div className="ItemMaster-buttons">
               <Button variant="contained" style={{ backgroundColor: 'black', color: 'white' }} onClick={() => setShowAddCategory(true)}>
                 Add Category

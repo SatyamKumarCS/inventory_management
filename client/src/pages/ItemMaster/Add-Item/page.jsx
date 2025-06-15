@@ -72,8 +72,8 @@ const AddItemPage = () => {
       <div className="dashboard-main">
         <Header />
         <div className="dashboard-content">
-          <Typography variant="h5" gutterBottom>
-            Item Master
+          <Typography variant="h5" fontWeight="Bold" gutterBottom>
+            Add Item
           </Typography>
 
           {/* Item Info Section */}
