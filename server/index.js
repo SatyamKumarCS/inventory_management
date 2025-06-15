@@ -57,22 +57,22 @@ app.post('/register', async (req, res) => {
 // Add a new category
 app.post('/api/categories', async (req, res) => {
     const { name } = req.body;
-  
+
     if (!name || name.trim() === "") {
-      return res.status(400).json({ message: "Category name is required" });
+        return res.status(400).json({ message: "Category name is required" });
     }
-  
+
     try {
-      const category = await prisma.category.create({
-        data: { name },
-      });
-      res.status(201).json(category);
+        const category = await prisma.category.create({
+            data: { name },
+        });
+        res.status(201).json(category);
     } catch (error) {
-      console.error("Add Category Error:", error);
-      res.status(500).json({ message: "Error adding category" });
+        console.error("Add Category Error:", error);
+        res.status(500).json({ message: "Error adding category" });
     }
-  });
-  
+});
+
 
 // Add SubCategory
 app.post('/api/subcategories', async (req, res) => {
@@ -154,24 +154,125 @@ app.put('/api/subcategories/:id', async (req, res) => {
 
 app.delete('/api/categories/:id', async (req, res) => {
     const id = parseInt(req.params.id);
+
+    try {
+        await prisma.subCategory.deleteMany({
+            where: { categoryId: id },
+        });
+
+        await prisma.category.delete({
+            where: { id },
+        });
+
+        res.status(200).json({ message: "Category deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting category:", error);
+        res.status(404).json({ message: "Category not found or already deleted" });
+    }
+});
+
+
+app.post("/add-product", async (req, res) => {
+    const {
+      name,
+      productId,
+      categoryId,
+      subcategoryId,
+      buyingPrice,
+      sellingPrice,
+      quantity,
+      unit,
+      threshold,
+      batchId,
+      expiryDate: rawExpiryDate,
+      supplier,
+    } = req.body;
+  
+    // ✅ Validate expiry date
+    let expiryDate = rawExpiryDate ? new Date(rawExpiryDate) : null;
+    if (expiryDate && isNaN(expiryDate.getTime())) {
+      return res.status(400).json({ error: "Invalid expiry date format" });
+    }
   
     try {
-      await prisma.subCategory.deleteMany({
-        where: { categoryId: id },
+      const product = await prisma.product.create({
+        data: {
+          name,
+          productId,
+          categoryId: parseInt(categoryId),
+          subcategoryId: parseInt(subcategoryId),
+          buyingPrice: parseFloat(buyingPrice),
+          sellingPrice: parseFloat(sellingPrice),
+          quantity: parseInt(quantity),
+          unit,
+          threshold: parseInt(threshold),
+          batchId,
+          expiryDate, 
+          supplier,
+        },
       });
   
-      await prisma.category.delete({
-        where: { id },
-      });
-  
-      res.status(200).json({ message: "Category deleted successfully" });
+      res.status(201).json(product);
     } catch (error) {
-      console.error("Error deleting category:", error);
-      res.status(404).json({ message: "Category not found or already deleted" });
+      console.error("Error adding product:", error);
+      res.status(500).json({ error: "Error adding product" });
+    }
+  });
+  app.get('/api/products', async (req, res) => {
+    try {
+      const products = await prisma.product.findMany();
+      res.json(products);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+
+  app.get("/api/stats", async (req, res) => {
+    try {
+      // Total categories
+      const totalCategories = await prisma.category.count();
+  
+      // Total products
+      const totalProducts = await prisma.product.count();
+  
+      // Low stock: quantity > 0 but <= threshold
+      const lowStock = await prisma.product.count({
+        where: {
+          AND: [
+            { quantity: { gt: 0 } },
+            { quantity: { lte: prisma.product.fields.threshold } },
+          ],
+        },
+      });
+  
+      // Alternative logic (if threshold field not usable through prisma.fields)
+      const allProducts = await prisma.product.findMany({
+        select: {
+          quantity: true,
+          threshold: true,
+        },
+      });
+  
+      const lowStockCount = allProducts.filter(
+        (p) => p.quantity > 0 && p.quantity <= p.threshold
+      ).length;
+  
+      const outOfStock = allProducts.filter((p) => p.quantity === 0).length;
+  
+      res.json({
+        totalCategories,
+        totalProducts,
+        lowStock: lowStockCount,
+        outOfStock,
+      });
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+      res.status(500).json({ message: "Error fetching stats", error: error.message });
     }
   });
   
-
 
 
 app.listen(3001, () =>
