@@ -1,17 +1,51 @@
+import { useState, useEffect, forwardRef} from "react";
 import Sidebar from "../../components/sidebar/page";
 import Header from "../../components/header/page";
 import "./style.css";
+import ProductTable from '../../components/ProductTable/page';
+import AddProductDialog from "../../components/Add-Product/page";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import { Grid, Typography, Box, Button, Paper, TextField, InputAdornment } from "@mui/material";
+import { Boxes, PackageCheck, TrendingDown, AlertTriangle, Plus, Search, Filter, Download} from "lucide-react";
+import axios from "axios";
 
-import { Grid, Typography, Box, Button, Paper } from "@mui/material";
-import {
-  Boxes,
-  PackageCheck,
-  TrendingDown,
-  AlertTriangle,
-  Plus,
-} from "lucide-react";
+const Alert = forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 
 const Inventory = () => {
+  const [products, setProducts] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleProductAdded = () => {
+    setSnackbarMessage("Product added successfully!");
+    setSnackbarOpen(true);
+  
+    axios.get("http://localhost:3001/api/products")
+    . then((res) => {
+    setProducts(res.data);
+  })
+      .catch((error) => {
+        console.error("Error fetching updated products:", error);
+      });
+  };
+  
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/api/products")
+      .then((res) => {
+        setProducts(res.data); // only set actual data
+      })
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+      });
+  }, []);
+  
+
   const stats = [
     {
       label: "Total Categories",
@@ -61,6 +95,7 @@ const Inventory = () => {
               variant="contained"
               startIcon={<Plus />}
               className="add-product-btn"
+              onClick={() => setOpenDialog(true)}
             >
               Add Product
             </Button>
@@ -71,7 +106,6 @@ const Inventory = () => {
             <Grid container spacing={3} className="stat-grid">
               {stats.map((stat, index) => (
                 <Grid
-                  item
                   xs={12}
                   sm={6}
                   md={3}
@@ -91,19 +125,89 @@ const Inventory = () => {
                       {stat.icon}
                     </Box>
                     <Box className="stat-card-body">
-                    <Typography variant="h5" fontWeight={600}>
-                      {stat.value}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" >
-                      {stat.sub}
-                    </Typography>
+                      <Typography variant="h5" fontWeight={600}>
+                        {stat.value}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {stat.sub}
+                      </Typography>
                     </Box>
                   </Paper>
                 </Grid>
               ))}
             </Grid>
           </Box>
+
+          {/* Product Table Card */}
+          <Box ml={4} mt={4} mr={4}>
+            <Paper elevation={2} sx={{ borderRadius: 2, padding: 2 }}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                flexWrap="wrap"
+                mb={2}
+              >
+                <Typography variant="h6" fontWeight="bold" >
+                  Products
+                </Typography>
+
+                <Box display="flex" gap={2} flexWrap="wrap">
+                  <TextField
+                    size="small"
+                    variant="outlined"
+                    placeholder="Search products..."
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search size={18} />
+                        </InputAdornment>
+                      ),
+                      style: { borderRadius: 8 },
+                    }}
+                  />
+
+                  <Button
+                    variant="outlined"
+                    startIcon={<Filter size={18} />}
+                    sx={{ textTransform: "none", borderRadius: 2 }}
+                  >
+                    Filters
+                  </Button>
+
+                  <Button
+                    variant="outlined"
+                    startIcon={<Download size={18} />}
+                    sx={{ textTransform: "none", borderRadius: 2}}
+                  >
+                    Download all
+                  </Button>
+                </Box>
+              </Box>
+
+              {/* Product Table */}
+              <Paper elevation={3}>
+              <ProductTable products={products} />
+              </Paper>
+            </Paper>
+          </Box>
         </Box>
+        <AddProductDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onSuccess={handleProductAdded}
+      />
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       </div>
     </div>
   );
