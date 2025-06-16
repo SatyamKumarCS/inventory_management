@@ -229,49 +229,106 @@ app.post("/add-product", async (req, res) => {
   });
 
 
-  app.get("/api/stats", async (req, res) => {
-    try {
-      // Total categories
-      const totalCategories = await prisma.category.count();
+//   app.get("/api/stats", async (req, res) => {
+//     try {
+//       // Total categories
+//       const totalCategories = await prisma.category.count();
   
-      // Total products
-      const totalProducts = await prisma.product.count();
+//       // Total products
+//       const totalProducts = await prisma.product.count();
   
-      // Low stock: quantity > 0 but <= threshold
-      const lowStock = await prisma.product.count({
-        where: {
-          AND: [
-            { quantity: { gt: 0 } },
-            { quantity: { lte: prisma.product.fields.threshold } },
-          ],
-        },
-      });
+//       // Low stock: quantity > 0 but <= threshold
+//       const lowStock = await prisma.product.count({
+//         where: {
+//           AND: [
+//             { quantity: { gt: 0 } },
+//             { quantity: { lte: prisma.product.fields.threshold } },
+//           ],
+//         },
+//       });
   
-      // Alternative logic (if threshold field not usable through prisma.fields)
-      const allProducts = await prisma.product.findMany({
-        select: {
-          quantity: true,
-          threshold: true,
-        },
-      });
+//       // Alternative logic (if threshold field not usable through prisma.fields)
+//       const allProducts = await prisma.product.findMany({
+//         select: {
+//           quantity: true,
+//           threshold: true,
+//         },
+//       });
   
-      const lowStockCount = allProducts.filter(
-        (p) => p.quantity > 0 && p.quantity <= p.threshold
-      ).length;
+//       const lowStockCount = allProducts.filter(
+//         (p) => p.quantity > 0 && p.quantity <= p.threshold
+//       ).length;
   
-      const outOfStock = allProducts.filter((p) => p.quantity === 0).length;
+//       const outOfStock = allProducts.filter((p) => p.quantity === 0).length;
   
-      res.json({
-        totalCategories,
-        totalProducts,
-        lowStock: lowStockCount,
-        outOfStock,
-      });
-    } catch (error) {
-      console.error("Error fetching stats:", error);
-      res.status(500).json({ message: "Error fetching stats", error: error.message });
-    }
-  });
+//       res.json({
+//         totalCategories,
+//         totalProducts,
+//         lowStock: lowStockCount,
+//         outOfStock,
+//       });
+//     } catch (error) {
+//       console.error("Error fetching stats:", error);
+//       res.status(500).json({ message: "Error fetching stats", error: error.message });
+//     }
+//   });
+
+
+
+// POST /api/items — Save Item to DB
+app.post('/api/items', async (req, res) => {
+  try {
+    const {
+      name, productId, categoryId, subcategoryId,
+      specification, brand, invoiceDate, expiryDate,
+      unitOfMeasurement, openingStock, asOnDate,
+      minStockLevel, unitPrice, gstRate
+    } = req.body;
+
+    const newItem = await prisma.item.create({
+      data: {
+        name,
+        productId,
+        categoryId: Number(categoryId),
+        subcategoryId: Number(subcategoryId),
+        specification,
+        brand,
+        invoiceDate: invoiceDate ? new Date(invoiceDate) : null,
+        expiryDate: expiryDate ? new Date(expiryDate) : null,
+        unitOfMeasurement,
+        openingStock: Number(openingStock),
+        asOnDate: asOnDate ? new Date(asOnDate) : null,
+        minStockLevel: Number(minStockLevel),
+        unitPrice: Number(unitPrice),
+        gstRate: Number(gstRate),
+      },
+      include: {
+        category: true,      // 👈 fetch related Category object
+        subcategory: true    // 👈 fetch related SubCategory object
+      },
+    });
+
+    res.json({ success: true, item: newItem });
+  } catch (error) {
+    console.error("❌ Error saving item:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+app.get('/api/items', async (req, res) => {
+  try {
+    const items = await prisma.item.findMany({
+      include: {
+        Category: true,
+        SubCategory: true,
+      }
+    });
+
+    res.status(200).json(items);
+  } catch (error) {
+    console.error("GET /api/items error:", error);
+    res.status(500).json({ error: "Failed to fetch items" });
+  }
+});
   
 
 
