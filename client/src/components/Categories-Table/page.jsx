@@ -16,7 +16,7 @@ const CategoriesTable = ({ categories, onEdit, onDelete }) => {
 
     return (
         <div className="categories-table-container">
-            <h2 className="categories-table-title">Category List</h2>
+            <h2 className="categories-table-title">Category & Sub Category List</h2>
             <Table>
                 <TableHead>
                     <TableRow>
