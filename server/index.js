@@ -289,8 +289,8 @@ app.post('/api/items', async (req, res) => {
       data: {
         name,
         productId,
-        categoryId: Number(categoryId),
-        subcategoryId: Number(subcategoryId),
+        CategoryId: Number(categoryId),
+        SubcategoryId: Number(subcategoryId),
         specification,
         brand,
         invoiceDate: invoiceDate ? new Date(invoiceDate) : null,
@@ -330,6 +330,135 @@ app.get('/api/items', async (req, res) => {
   }
 });
   
+app.post("/api/suppliers", async (req, res) => {
+  try {
+    const {
+      name,
+      product,
+      categoryId, // ✅ should be an integer
+      price,
+      contact,
+      email,
+      date
+    } = req.body;
+    const parsedCategoryId = parseInt(categoryId);
+
+    if (isNaN(parsedCategoryId)) {
+      return res.status(400).json({ error: "Invalid categoryId" });
+    }
+
+
+    const supplier = await prisma.supplier.create({
+      data: {
+        name,
+        product,
+        categoryId: Number(categoryId), // 🔄 Convert to int if sent as string
+        price,
+        contact,
+        email,
+        date
+      },
+    });
+
+    res.status(201).json(supplier);
+  } catch (err) {
+    console.error("Failed to add supplier:", err);
+    res.status(500).json({ error: "Failed to add supplier" });
+  }
+});
+
+
+app.get("/api/suppliers", async (req, res) => {
+  try {
+    const suppliers = await prisma.supplier.findMany({
+      include: {
+        category: true, // 👈 include the related Category
+      },
+    });
+    res.json(suppliers);
+  } catch (err) {
+    console.error("❌ Prisma supplier fetch failed:", err);
+    res.status(500).json({ error: "Failed to fetch suppliers", details: err.message });
+  }
+});
+app.post("/api/customers", async (req, res) => {
+  const { name, customerId, contact, email, product, price, date, customerType } = req.body;
+
+  try {
+    const newCustomer = await prisma.customer.create({
+      data: {
+        name,
+        customerId,
+        contact,
+        email,
+        product,
+        price,
+        date: new Date(date),
+        customerType,
+      },
+    });
+    res.json(newCustomer);
+  } catch (err) {
+    console.error("Error creating customer:", err);
+    res.status(500).json({ error: "Failed to create customer" });
+  }
+});
+
+app.get("/api/customers", async (req, res) => {
+  try {
+    const customers = await prisma.customer.findMany();
+    res.json(customers);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch customers" });
+  }
+});
+
+app.post('/api/orders', async (req, res) => {
+  const {
+    orderId,
+    product,
+    value,
+    quantity,
+    delivery,
+    status,
+    categoryId, 
+  } = req.body;
+
+  try {
+    const newOrder = await prisma.order.create({
+      data: {
+        orderId,
+        product,
+        value: parseFloat(value),
+        quantity,
+        delivery: new Date(delivery),
+        status,
+        category: {
+          connect: { id: categoryId },
+        },
+      },
+    });
+
+    res.status(201).json(newOrder);
+  } catch (error) {
+    console.error('Error creating order:', error);
+    res.status(400).json({ message: 'Invalid data', error });
+  }
+});
+
+app.get('/api/orders', async (req, res) => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: { category: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json(orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ message: 'Failed to fetch orders' });
+  }
+});
+
 
 
 app.listen(3001, () =>
