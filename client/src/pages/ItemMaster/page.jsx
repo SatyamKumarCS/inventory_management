@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import './style.css';
+import ItemTable from "../../components/Add-item/page";
 
 
 const ItemMaster = () => {
@@ -33,6 +34,7 @@ const ItemMaster = () => {
   const [editedSubcategories, setEditedSubcategories] = useState([]);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [showItems, setShowItems] = useState(false);
 
 
 
@@ -215,6 +217,9 @@ const ItemMaster = () => {
               Item Master
             </Typography>
             <div className="ItemMaster-buttons">
+              <Button variant="contained" onClick={() => setShowItems(!showItems)}>
+                {showItems ? 'View Categories' : 'View Items'}
+              </Button>
               <Button variant="contained" style={{ backgroundColor: 'black', color: 'white' }} onClick={() => setShowAddCategory(true)}>
                 Add Category
               </Button>
@@ -225,11 +230,15 @@ const ItemMaster = () => {
             </div>
           </div>
 
-          <CategoriesTable
-            categories={categories}
-            onEdit={handleEditCategory}
-            onDelete={(category) => confirmDeleteCategory(category)}
-          />
+          {showItems ? (
+            <ItemTable />
+          ) : (
+            <CategoriesTable
+              categories={categories}
+              onEdit={handleEditCategory}
+              onDelete={(category) => confirmDeleteCategory(category)}
+            />
+          )}
 
 
 
