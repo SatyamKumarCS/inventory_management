@@ -19,7 +19,9 @@ model Category {
   name          String        @unique
   subcategories SubCategory[]
   Product       Product[]
-  Item          Item[]
+  Item       Item[] 
+  Supplier      Supplier[]
+  Orders      Order[]
 }
 
 model SubCategory {
@@ -28,9 +30,8 @@ model SubCategory {
   category   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId Int
   Product    Product[]
-  Item       Item[]
-
   @@unique([name, categoryId]) // prevent duplicate subcategories under same category
+  Item       Item[] 
 }
 
 model Product {
@@ -53,23 +54,71 @@ model Product {
   updatedAt     DateTime    @updatedAt
 }
 
+
 model Item {
-  id                Int          @id @default(autoincrement())
-  name              String
-  productId         String
-  categoryId        Int
-  subcategoryId     Int
-  specification     String?
-  brand             String?
-  invoiceDate       DateTime?
-  expiryDate        DateTime?
-  unitOfMeasurement String?
-  openingStock      Int
-  asOnDate          DateTime?
-  minStockLevel     Int
-  unitPrice         Float
-  gstRate           Float
-  Category          Category     @relation(fields: [categoryId], references: [id])
-  SubCategory       SubCategory? @relation(fields: [subCategoryId], references: [id])
-  subCategoryId     Int?
+  id                 Int         @id @default(autoincrement())
+  name               String
+  productId          String      @unique
+  Category           Category?    @relation(fields: [CategoryId], references: [id])
+  CategoryId         Int?
+  SubCategory        SubCategory? @relation(fields: [SubCategoryId], references: [id])
+  SubCategoryId      Int?
+  specification      String?
+  brand              String?
+  invoiceDate        DateTime?
+  expiryDate         DateTime?
+  unitOfMeasurement  String
+  openingStock       Int
+  asOnDate           DateTime?
+  minStockLevel      Int
+  unitPrice          Float
+  gstRate            Float
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime?    @updatedAt
 }
+
+model Supplier {
+  id            Int          @id @default(autoincrement())
+  name          String
+  product       String
+  categoryId    Int
+  category      Category     @relation(fields: [categoryId], references: [id])
+  price         String
+  contact       String
+  email         String
+  date          String
+  review        String?
+}
+
+model Customer {
+  id           Int      @id @default(autoincrement())
+  customerId   String   @unique 
+  name         String
+  contact      String   
+  email        String
+  product      String   
+  price        String  
+  date         DateTime
+  customerType String 
+}
+
+model Order {
+  id         String       @id @default(uuid()) 
+  orderId    String       @unique              
+  product    String
+  value      Float
+  quantity   String
+  delivery   DateTime
+  status     OrderStatus  @default(CONFIRMED)
+  category   Category?    @relation(fields: [categoryId], references: [id])
+  categoryId Int?
+  createdAt  DateTime     @default(now())
+}
+
+enum OrderStatus {
+  CONFIRMED
+  DELAYED
+  RETURNED
+  OUT_FOR_DELIVERY
+}
+
