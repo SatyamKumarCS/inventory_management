@@ -229,52 +229,6 @@ app.post("/add-product", async (req, res) => {
   });
 
 
-//   app.get("/api/stats", async (req, res) => {
-//     try {
-//       // Total categories
-//       const totalCategories = await prisma.category.count();
-  
-//       // Total products
-//       const totalProducts = await prisma.product.count();
-  
-//       // Low stock: quantity > 0 but <= threshold
-//       const lowStock = await prisma.product.count({
-//         where: {
-//           AND: [
-//             { quantity: { gt: 0 } },
-//             { quantity: { lte: prisma.product.fields.threshold } },
-//           ],
-//         },
-//       });
-  
-//       // Alternative logic (if threshold field not usable through prisma.fields)
-//       const allProducts = await prisma.product.findMany({
-//         select: {
-//           quantity: true,
-//           threshold: true,
-//         },
-//       });
-  
-//       const lowStockCount = allProducts.filter(
-//         (p) => p.quantity > 0 && p.quantity <= p.threshold
-//       ).length;
-  
-//       const outOfStock = allProducts.filter((p) => p.quantity === 0).length;
-  
-//       res.json({
-//         totalCategories,
-//         totalProducts,
-//         lowStock: lowStockCount,
-//         outOfStock,
-//       });
-//     } catch (error) {
-//       console.error("Error fetching stats:", error);
-//       res.status(500).json({ message: "Error fetching stats", error: error.message });
-//     }
-//   });
-
-
-
 // POST /api/items — Save Item to DB
 app.post('/api/items', async (req, res) => {
   try {
