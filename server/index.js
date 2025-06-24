@@ -289,8 +289,12 @@ app.post('/api/items', async (req, res) => {
       data: {
         name,
         productId,
-        CategoryId: Number(categoryId),
-        SubcategoryId: Number(subcategoryId),
+        Category: {
+          connect: { id: Number(categoryId) }
+        },
+        SubCategory: {
+          connect: { id: Number(subcategoryId) }
+        },
         specification,
         brand,
         invoiceDate: invoiceDate ? new Date(invoiceDate) : null,
@@ -303,8 +307,8 @@ app.post('/api/items', async (req, res) => {
         gstRate: Number(gstRate),
       },
       include: {
-        category: true,      
-        subcategory: true    
+        Category: true,
+        SubCategory: true
       },
     });
 
@@ -335,7 +339,7 @@ app.post("/api/suppliers", async (req, res) => {
     const {
       name,
       product,
-      categoryId, // ✅ should be an integer
+      categoryId, 
       price,
       contact,
       email,
