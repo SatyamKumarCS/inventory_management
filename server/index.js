@@ -188,7 +188,7 @@ app.post("/add-product", async (req, res) => {
       supplier,
     } = req.body;
   
-    // ✅ Validate expiry date
+
     let expiryDate = rawExpiryDate ? new Date(rawExpiryDate) : null;
     if (expiryDate && isNaN(expiryDate.getTime())) {
       return res.status(400).json({ error: "Invalid expiry date format" });
@@ -303,14 +303,14 @@ app.post('/api/items', async (req, res) => {
         gstRate: Number(gstRate),
       },
       include: {
-        category: true,      // 👈 fetch related Category object
-        subcategory: true    // 👈 fetch related SubCategory object
+        category: true,      
+        subcategory: true    
       },
     });
 
     res.json({ success: true, item: newItem });
   } catch (error) {
-    console.error("❌ Error saving item:", error);
+    console.error("Error saving item:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
@@ -352,7 +352,7 @@ app.post("/api/suppliers", async (req, res) => {
       data: {
         name,
         product,
-        categoryId: Number(categoryId), // 🔄 Convert to int if sent as string
+        categoryId: Number(categoryId),
         price,
         contact,
         email,
@@ -372,12 +372,12 @@ app.get("/api/suppliers", async (req, res) => {
   try {
     const suppliers = await prisma.supplier.findMany({
       include: {
-        category: true, // 👈 include the related Category
+        category: true,
       },
     });
     res.json(suppliers);
   } catch (err) {
-    console.error("❌ Prisma supplier fetch failed:", err);
+    console.error("Prisma supplier fetch failed:", err);
     res.status(500).json({ error: "Failed to fetch suppliers", details: err.message });
   }
 });
