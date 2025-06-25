@@ -39,7 +39,6 @@ const Order = () => {
 
 
 
-  // 🔁 Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -104,7 +103,6 @@ const Order = () => {
     }
   }, [orders]);
 
-  // ✅ Submit Order
   const handleAddOrder = async () => {
     try {
       await axios.post("http://localhost:3001/api/orders", {
