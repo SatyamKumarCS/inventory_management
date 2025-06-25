@@ -34,7 +34,6 @@ const Order = () => {
   const [orderId, setOrderId] = useState("");
   const [orderValue, setOrderValue] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState("");
   const [buyingPrice, setBuyingPrice] = useState("");
   const [deliveryDate, setDeliveryDate] = useState("");
 
@@ -79,10 +78,10 @@ const Order = () => {
         paginationSize: 8,
         movableColumns: true,
         columns: [
+          { title: "Order ID", field: "orderId" },
           { title: "Product", field: "product", headerFilter: true },
           { title: "Order Value", field: "value", sorter: "number", hozAlign: "left" },
           { title: "Quantity", field: "quantity" },
-          { title: "Order ID", field: "orderId" },
           { title: "Expected Delivery", field: "delivery", sorter: "date" },
           {
             title: "Status",
@@ -112,7 +111,7 @@ const Order = () => {
         orderId,
         product,
         value: parseFloat(orderValue),
-        quantity: `${quantity} ${unit}`,
+        quantity: `${quantity}`,
         delivery: new Date(deliveryDate),
         status: "CONFIRMED",
         categoryId: selectedCategory,
@@ -122,7 +121,6 @@ const Order = () => {
       setOrderId("");
       setOrderValue("");
       setQuantity("");
-      setUnit("");
       setBuyingPrice("");
       setDeliveryDate("");
       setSelectedCategory("");
@@ -195,9 +193,6 @@ const Order = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField label="Quantity" fullWidth value={quantity} onChange={(e) => setQuantity(e.target.value)} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Unit" fullWidth value={unit} onChange={(e) => setUnit(e.target.value)} />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField label="Buying Price" fullWidth value={buyingPrice} onChange={(e) => setBuyingPrice(e.target.value)} />
