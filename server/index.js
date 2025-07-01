@@ -220,7 +220,12 @@ app.post("/add-product", async (req, res) => {
   });
   app.get('/api/products', async (req, res) => {
     try {
-      const products = await prisma.product.findMany();
+      const products = await prisma.product.findMany(({
+        include: {
+          category: true,
+          subcategory: true,
+        }
+      }));
       res.json(products);
     } catch (err) {
       console.error("Error fetching products:", err);
